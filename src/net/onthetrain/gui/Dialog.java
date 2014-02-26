@@ -85,6 +85,7 @@ public class Dialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				if (!name.getText().equals("")) {
 					Game.getInstance().setName(name.getText());
+					Frame.getInstance().setTitle("Catch Meeow - " + name.getText());
 					Game.getInstance().setLevel(speed.getSelectedItem().toString());
 					long speedLong = speed.getSelectedItem().equals("Slow") ? 6 : speed.getSelectedItem().equals("Medium") ? 4 : 2;
 					Game.getInstance().setSpeed(speedLong);

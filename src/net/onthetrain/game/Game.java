@@ -13,7 +13,8 @@ public class Game implements Runnable {
 	private int height, width;
 	private List<Obstacle> obstacles;
 	private Cat cat;
-
+	private Dialog settings;
+	
 	private String name, level;
 	
 	private long time;
@@ -38,6 +39,13 @@ public class Game implements Runnable {
 		this.name = "";
 		this.speed = 3;
 		this.pauseCount = 0;
+	}
+	
+	public void showSettings() {
+		if (settings == null)
+			settings = new Dialog(null, "Catch Meeow", true);
+		else
+			settings.setVisible(true);
 	}
 
 	public String getLevel() {
@@ -228,11 +236,9 @@ public class Game implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		Game game = Game.getInstance();
-		new Dialog(null, "Catch Meeow", true);
-		Frame frame = new Frame();
-		new Thread(frame).start();
-		new Thread(game).start();
+		Game.getInstance().showSettings();
+		new Thread(Frame.getInstance()).start();
+		new Thread(Game.getInstance()).start();
 	}
 
 	public boolean isPaused() {

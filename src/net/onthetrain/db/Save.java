@@ -19,6 +19,7 @@ public class Save implements Runnable {
 		String name = Game.getInstance().getName();
 		int score = Game.getInstance().getScore();
 		int pauses = Game.getInstance().getPauseCount();
+		Game.getInstance().getCat();
 		int jumps = Cat.getJumps();
 		String level = Game.getInstance().getLevel();
 		

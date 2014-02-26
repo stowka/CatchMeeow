@@ -28,20 +28,25 @@ public class Frame extends JFrame implements Runnable, ActionListener, WindowLis
 
 	private JMenuBar menuBar;
 	private JMenu file, help;
-	private JMenuItem close, credits;
+	private JMenuItem settings, close, credits;
+	
+	private static Frame instance = null;
 
-	public Frame() {
+	private Frame() {
 		this.panel = new Panel();
 
 		this.menuBar = new JMenuBar();
 		this.file = new JMenu("File");
 		this.help = new JMenu("Help");
 
+		this.settings = new JMenuItem("Settings");
+		this.settings.addActionListener(this);
 		this.close = new JMenuItem("Close");
 		this.close.addActionListener(this);
 		this.credits = new JMenuItem("Credits");
 		this.credits.addActionListener(this);
 
+		this.file.add(settings);
 		this.file.add(close);
 		this.help.add(credits);
 
@@ -65,6 +70,12 @@ public class Frame extends JFrame implements Runnable, ActionListener, WindowLis
 
 		this.setVisible(true);
 	}
+	
+	public static Frame getInstance() {
+		if (instance == null)
+			instance = new Frame();
+		return instance;
+	}
 
 	@Override
 	public void run() {
@@ -85,7 +96,9 @@ public class Frame extends JFrame implements Runnable, ActionListener, WindowLis
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if (source == close) {
+		if (source == settings) {
+			Game.getInstance().showSettings();
+		} else if (source == close) {
 			close();
 		} else if (source == credits) {
 			credits();
