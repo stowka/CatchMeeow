@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import net.onthetrain.gui.Dialog;
 import net.onthetrain.gui.Frame;
 
 public class Game implements Runnable {
@@ -16,20 +17,37 @@ public class Game implements Runnable {
 
 	private long time;
 	private int score, n;
-	
-	private boolean increasement; 
 
-	private static final int WIDTH = 600;
+	private boolean increasement;
+
+	private static final int WIDTH = 800;
 	private static final int HEIGHT = 200;
-	
-	private static final long SPEED = 5;
 
-	public Game(String name) {
+	private long speed;
+	
+	private static Game instance = null;
+
+	private Game() {
 		this.height = HEIGHT;
 		this.width = WIDTH;
 		this.cat = new Cat(95);
 		this.obstacles = new ArrayList<Obstacle>();
-		this.name = name;
+		this.name = "";
+		this.speed = 3;
+	}
+	
+	public static Game getInstance() {
+		if (Game.instance == null)
+			instance = new Game();
+		return instance;
+	}
+
+	public long getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(long speed) {
+		this.speed = speed;
 	}
 
 	public String getName() {
@@ -111,8 +129,6 @@ public class Game implements Runnable {
 
 		score = (int) (System.currentTimeMillis() - time) / 1000;
 
-		//new Thread(new Save(score, name)).start();
-
 		Object[] options = { "Yes", "No" };
 		int n = JOptionPane.showOptionDialog(null, "Ouch!\n" + score
 				+ " seconds\n" + "Try again?", "A silly question",
@@ -133,16 +149,17 @@ public class Game implements Runnable {
 		while (true) {
 			time = System.currentTimeMillis();
 			while (cat.isFlying()) {
-				if (increasement && ++n % ((int) (Math.random() * 50 + 80)) == 0) {
+				if (increasement
+						&& ++n % ((int) (Math.random() * 50 + 80)) == 0) {
 					Obstacle o = new ObstacleDown(height, width);
 					addObstacle(o);
 					increasement = false;
 				}
-				
+
 				if (!increasement)
 					n -= 1;
-				
-				if (0 == n) 
+
+				if (0 == n)
 					increasement = true;
 
 				updateObstaclePositions();
@@ -158,7 +175,7 @@ public class Game implements Runnable {
 				}
 
 				try {
-					Thread.sleep(SPEED);
+					Thread.sleep(speed);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -184,17 +201,10 @@ public class Game implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		String name = (String) JOptionPane.showInputDialog(null,
-				"What's your name?\n", "Catch Meeow",
-				JOptionPane.PLAIN_MESSAGE, null, null, "");
-
-		if (null == name) {
-			System.exit(0);
-		} else {
-			Game game = new Game(name);
-			Frame frame = new Frame(game, name);
-			new Thread(frame).start();
-			new Thread(game).start();
-		}
+		Game game = Game.getInstance();
+		new Dialog(null, "Catch Meeow", true);
+		Frame frame = new Frame();
+		new Thread(frame).start();
+		new Thread(game).start();
 	}
 }

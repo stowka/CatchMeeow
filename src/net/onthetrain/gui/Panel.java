@@ -28,12 +28,10 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Game game = null;
 	private Font font = null;
 	private Image cat = null, prey = null;
 
-	public Panel(Game game) {
-		this.game = game;
+	public Panel() {
 		try {
 			this.cat = ImageIO.read(new File("assets/img/miaouss.png"));
 			this.prey = ImageIO.read(new File("assets/img/magicarpe.png"));
@@ -73,7 +71,7 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		g2d.setColor(Color.WHITE);
 		g2d.setFont(font);
 		g2d.drawString(
-				(int) ((System.currentTimeMillis() - game.getTime()) / 1000)
+				(int) ((System.currentTimeMillis() - Game.getInstance().getTime()) / 1000)
 						+ " seconds", 20, getHeight() - 20);
 
 		// Jumps
@@ -81,17 +79,17 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 				getHeight() - 20);
 
 		// Character
-		g2d.drawImage(cat, 80, getHeight() - game.getCat().getHeight(), 47, 47,
+		g2d.drawImage(cat, 80, getHeight() - Game.getInstance().getCat().getHeight(), 47, 47,
 				this);
 
 		// Prey
-		g2d.drawImage(prey, getWidth() - 80 - (game.getN() / 3), 88, 40, 40,
+		g2d.drawImage(prey, getWidth() - 80 - (Game.getInstance().getN() / 3), 70, 40, 40,
 				this);
 
 		// Obstacles
 
 		g2d.setColor(new Color(210, 63, 43));
-		for (Obstacle o : game.getObstacles()) {
+		for (Obstacle o : Game.getInstance().getObstacles()) {
 			g2d.fillRect(o.getPosition() - o.getWidth(),
 					getHeight() - (o.getHeight() + 50), o.getWidth(),
 					o.getHeight());
@@ -100,14 +98,14 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == 49) {
-			game.getCat().jump();
+		if (e.getKeyCode() == KeyEvent.VK_UP) {
+			Game.getInstance().getCat().jump();
 		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		game.getCat().jump();
+		Game.getInstance().getCat().jump();
 	}
 
 	@Override
