@@ -38,9 +38,11 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			this.font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("assets/fonts/SourceSansPro-Regular.ttf"));
+			this.font = Font.createFont(Font.TRUETYPE_FONT,
+					new FileInputStream(
+							"assets/fonts/SourceSansPro-Regular.ttf"));
 			this.font = this.font.deriveFont(18F);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -63,6 +65,10 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		g2d.setColor(new Color(73, 159, 255));
 		g2d.fillRect(0, 0, getWidth(), getHeight() - 50);
 
+		// Sun
+		g2d.setColor(new Color(255, 181, 2));
+		g2d.fillRect(0, 0, getWidth(), 1);
+
 		// Ground
 		g2d.setColor(new Color(0, 150, 85));
 		g2d.fillRect(0, getHeight() - 50, getWidth(), getHeight());
@@ -70,21 +76,34 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		// Time
 		g2d.setColor(Color.WHITE);
 		g2d.setFont(font);
-		g2d.drawString(
-				(int) ((System.currentTimeMillis() - Game.getInstance().getTime()) / 1000)
-						+ " seconds", 20, getHeight() - 20);
+		String str = Game.getInstance().getScore() > 1 ? " seconds" : " second";
+		g2d.drawString(Game.getInstance().getScore() + str, 20,
+				getHeight() - 20);
+		if (Game.getInstance().isPaused()) {
+			g2d.drawString("[PAUSE]", 20, 20);
+		}
 
 		// Jumps
-		g2d.drawString(Cat.getJumps() + " jumps", 20 + (getWidth() / 2),
-				getHeight() - 20);
+		if (Cat.getJumps() >= 1) {
+			str = Cat.getJumps() > 1 ? " jumps" : " jump";
+			g2d.drawString(Cat.getJumps() + str, (getWidth() / 2) - 50,
+					getHeight() - 20);
+		}
+
+		// Pauses
+		if (Game.getInstance().getPauseCount() >= 1) {
+			str = Game.getInstance().getPauseCount() > 1 ? " pauses" : " pause";
+			g2d.drawString(Game.getInstance().getPauseCount() + str, 50 + (getWidth() / 2)
+					+ (getWidth() / 4), getHeight() - 20);
+		}
 
 		// Character
-		g2d.drawImage(cat, 80, getHeight() - Game.getInstance().getCat().getHeight(), 47, 47,
-				this);
+		g2d.drawImage(cat, 80, getHeight()
+				- Game.getInstance().getCat().getHeight(), 47, 47, this);
 
 		// Prey
-		g2d.drawImage(prey, getWidth() - 80 - (Game.getInstance().getN() / 3), 70, 40, 40,
-				this);
+		g2d.drawImage(prey, getWidth() - 80 - (Game.getInstance().getN() / 3),
+				70, 40, 40, this);
 
 		// Obstacles
 
@@ -98,8 +117,13 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
+		if (!Game.getInstance().isPaused()
+				&& (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_SPACE)) {
 			Game.getInstance().getCat().jump();
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			Game.getInstance().setPaused(!Game.getInstance().isPaused());
 		}
 	}
 

@@ -40,4 +40,8 @@ public class Cat {
 	public static int getJumps() {
 		return jumps;
 	}
+
+	public void resetJumps() {
+		jumps = 0;
+	}
 }

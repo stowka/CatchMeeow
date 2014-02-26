@@ -83,10 +83,15 @@ public class Dialog extends JDialog {
 
 		okBouton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Game.getInstance().setName(name.getText());
-				long speedLong = speed.getSelectedItem().equals("Slow") ? 6 : speed.getSelectedItem().equals("Medium") ? 4 : 2;
-				Game.getInstance().setSpeed(speedLong);
-				setVisible(false);
+				if (!name.getText().equals("")) {
+					Game.getInstance().setName(name.getText());
+					Game.getInstance().setLevel(speed.getSelectedItem().toString());
+					long speedLong = speed.getSelectedItem().equals("Slow") ? 6 : speed.getSelectedItem().equals("Medium") ? 4 : 2;
+					Game.getInstance().setSpeed(speedLong);
+					setVisible(false);
+				} else {
+					name.grabFocus();
+				}
 			}
 		});
 

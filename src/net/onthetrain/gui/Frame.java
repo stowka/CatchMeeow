@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -11,10 +13,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import net.onthetrain.db.Save;
 import net.onthetrain.game.Game;
 
-public class Frame extends JFrame implements Runnable, ActionListener {
+public class Frame extends JFrame implements Runnable, ActionListener, WindowListener {
 	/**
 	 * 
 	 */
@@ -24,29 +25,26 @@ public class Frame extends JFrame implements Runnable, ActionListener {
 	private static final int HEIGHT = 200;
 
 	private Panel panel = null;
-	
+
 	private JMenuBar menuBar;
 	private JMenu file, help;
-	private JMenuItem close, save, credits;
+	private JMenuItem close, credits;
 
 	public Frame() {
 		this.panel = new Panel();
-		
+
 		this.menuBar = new JMenuBar();
 		this.file = new JMenu("File");
 		this.help = new JMenu("Help");
-		
+
 		this.close = new JMenuItem("Close");
 		this.close.addActionListener(this);
-		this.save = new JMenuItem("Save");
-		this.save.addActionListener(this);
 		this.credits = new JMenuItem("Credits");
 		this.credits.addActionListener(this);
-		
-		this.file.add(save);
+
 		this.file.add(close);
 		this.help.add(credits);
-		
+
 		this.menuBar.add(file);
 		this.menuBar.add(help);
 
@@ -71,9 +69,16 @@ public class Frame extends JFrame implements Runnable, ActionListener {
 	@Override
 	public void run() {
 		while (true) {
-			while (Game.getInstance().getCat().isFlying()) {
-				panel.repaint();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
+			Game.getInstance().setTime(System.currentTimeMillis());
+			Game.getInstance().getCat().resetJumps();
+			Game.getInstance().setPauseCount(0);
+			while (Game.getInstance().getCat().isFlying())
+				panel.repaint();
 		}
 	}
 
@@ -82,15 +87,14 @@ public class Frame extends JFrame implements Runnable, ActionListener {
 		Object source = e.getSource();
 		if (source == close) {
 			close();
-		} else if (source == save) {
-			new Thread(new Save(Game.getInstance().getScore(), Game.getInstance().getName())).start();
 		} else if (source == credits) {
 			credits();
 		}
 	}
 
 	private void close() {
-		String[] options = {"Yes, but I'll play again very soon!", "No, I just misclicked!"};
+		String[] options = { "Yes, but I'll play again very soon!",
+				"No, I just misclicked!" };
 		int n = JOptionPane.showOptionDialog(null, "Are you sure?", "Exit",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 				options, options[0]);
@@ -100,6 +104,33 @@ public class Frame extends JFrame implements Runnable, ActionListener {
 
 	private void credits() {
 		// TODO Auto-generated method stub
-		
+
 	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0) {}
+
+	@Override
+	public void windowClosed(WindowEvent arg0) {}
+
+	@Override
+	public void windowClosing(WindowEvent arg0) {
+		close();
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+		Game.getInstance().setPaused(true);
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+		Game.getInstance().setPaused(true);
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {}
 }

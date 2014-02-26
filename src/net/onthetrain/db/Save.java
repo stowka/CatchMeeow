@@ -4,26 +4,33 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class Save implements Runnable {
+import net.onthetrain.game.Cat;
+import net.onthetrain.game.Game;
 
-	private int score = 0;
-	private String name = null;
+public class Save implements Runnable {
 	
-	public Save(int score, String name) {
-		this.score = score;
-		this.name = name;
+	public Save() {
 	}
 	
 	@Override
 	public void run() {
 		int error = -1;
 		Connection c = SDBH.getConnection();
+		String name = Game.getInstance().getName();
+		int score = Game.getInstance().getScore();
+		int pauses = Game.getInstance().getPauseCount();
+		int jumps = Cat.getJumps();
+		String level = Game.getInstance().getLevel();
+		
 		PreparedStatement pstm = null;
-		String query = "INSERT INTO `score` (`name`, `time`) values (?, ?);";
+		String query = "INSERT INTO `score` (`name`, `score`, `jumps`, `pauses`, `level`) values (?, ?, ?, ?, ?);";
 		try {
 			pstm = c.prepareStatement(query);
 			pstm.setString(1, name);
 			pstm.setInt(2, score);
+			pstm.setInt(3, jumps);
+			pstm.setInt(4, pauses);
+			pstm.setString(5, level);
 			error = pstm.executeUpdate();
 			if (1 != error) {
 				System.err.println("Error while saving score");

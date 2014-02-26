@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import net.onthetrain.db.Save;
 import net.onthetrain.gui.Dialog;
 import net.onthetrain.gui.Frame;
 
@@ -13,10 +14,10 @@ public class Game implements Runnable {
 	private List<Obstacle> obstacles;
 	private Cat cat;
 
-	private String name;
-
+	private String name, level;
+	
 	private long time;
-	private int score, n;
+	private int score, n, pauseCount;
 
 	private boolean increasement;
 
@@ -24,6 +25,8 @@ public class Game implements Runnable {
 	private static final int HEIGHT = 200;
 
 	private long speed;
+	
+	private boolean paused;
 	
 	private static Game instance = null;
 
@@ -34,7 +37,17 @@ public class Game implements Runnable {
 		this.obstacles = new ArrayList<Obstacle>();
 		this.name = "";
 		this.speed = 3;
+		this.pauseCount = 0;
 	}
+
+	public String getLevel() {
+		return level;
+	}
+
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
 	
 	public static Game getInstance() {
 		if (Game.instance == null)
@@ -126,9 +139,7 @@ public class Game implements Runnable {
 
 	public void lose(long time, String reason) {
 		cat.setFlying(false);
-
-		score = (int) (System.currentTimeMillis() - time) / 1000;
-
+		new Thread(new Save()).start();
 		Object[] options = { "Yes", "No" };
 		int n = JOptionPane.showOptionDialog(null, "Ouch!\n" + score
 				+ " seconds\n" + "Try again?", "A silly question",
@@ -137,8 +148,8 @@ public class Game implements Runnable {
 		if (1 == n)
 			System.exit(0);
 		else {
-			this.cat = new Cat(88);
-			this.obstacles = new ArrayList<Obstacle>();
+			Game.getInstance().setCat(new Cat(95));
+			Game.getInstance().setObstacles(new ArrayList<Obstacle>());
 		}
 	}
 
@@ -147,37 +158,53 @@ public class Game implements Runnable {
 		n = 0;
 		increasement = true;
 		while (true) {
-			time = System.currentTimeMillis();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			while (cat.isFlying()) {
-				if (increasement
-						&& ++n % ((int) (Math.random() * 50 + 80)) == 0) {
-					Obstacle o = new ObstacleDown(height, width);
-					addObstacle(o);
-					increasement = false;
-				}
-
-				if (!increasement)
-					n -= 1;
-
-				if (0 == n)
-					increasement = true;
-
-				updateObstaclePositions();
-
-				if (!checkObstacle())
-					lose(time, "obstacle");
-
-				if (n % 2 == 0 || n % 3 == 0)
-					cat.fall();
-
-				if (cat.getHeight() >= height - 20) {
-					lose(time, "sky");
-				}
-
 				try {
-					Thread.sleep(speed);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+				}
+				while (!isPaused()) {
+					if (System.currentTimeMillis() - time > 1000) {
+						score += 1;
+						time = System.currentTimeMillis();
+					}
+					
+					if (increasement
+							&& ++n % ((int) (Math.random() * 50 + 80)) == 0) {
+						Obstacle o = new ObstacleDown(height, width);
+						addObstacle(o);
+						increasement = false;
+					}
+	
+					if (!increasement)
+						n -= 1;
+	
+					if (0 == n)
+						increasement = true;
+	
+					updateObstaclePositions();
+	
+					if (!checkObstacle())
+						lose(time, "obstacle");
+	
+					if (n % 2 == 0 || n % 3 == 0)
+						cat.fall();
+	
+					if (cat.getHeight() >= height - 20) {
+						lose(time, "sky");
+					}
+	
+					try {
+						Thread.sleep(speed);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -206,5 +233,26 @@ public class Game implements Runnable {
 		Frame frame = new Frame();
 		new Thread(frame).start();
 		new Thread(game).start();
+	}
+
+	public boolean isPaused() {
+		return paused;
+	}
+	
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+		if (!paused) {
+			Game.getInstance().setTime(System.currentTimeMillis());
+		} else {
+			pauseCount += 1;
+		}
+	}
+
+	public int getPauseCount() {
+		return pauseCount;
+	}
+
+	public void setPauseCount(int pauseCount) {
+		this.pauseCount = pauseCount;
 	}
 }
