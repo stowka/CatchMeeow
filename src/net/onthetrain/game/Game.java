@@ -261,4 +261,8 @@ public class Game implements Runnable {
 	public void setPauseCount(int pauseCount) {
 		this.pauseCount = pauseCount;
 	}
+
+	public void resetScore() {
+		score = 0;		
+	}
 }

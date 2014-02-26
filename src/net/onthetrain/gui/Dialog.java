@@ -87,7 +87,7 @@ public class Dialog extends JDialog {
 					Game.getInstance().setName(name.getText());
 					Frame.getInstance().setTitle("Catch Meeow - " + name.getText());
 					Game.getInstance().setLevel(speed.getSelectedItem().toString());
-					long speedLong = speed.getSelectedItem().equals("Slow") ? 6 : speed.getSelectedItem().equals("Medium") ? 4 : 2;
+					long speedLong = speed.getSelectedItem().equals("Slow") ? 5 : speed.getSelectedItem().equals("Medium") ? 3 : 2;
 					Game.getInstance().setSpeed(speedLong);
 					setVisible(false);
 				} else {
@@ -100,13 +100,12 @@ public class Dialog extends JDialog {
 		cancelBouton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setVisible(false);
-				System.exit(0);
 			}
 		});
 
 		control.add(okBouton);
 		control.add(cancelBouton);
-
+ 
 		this.getContentPane().add(panIcon, BorderLayout.WEST);
 		this.getContentPane().add(content, BorderLayout.CENTER);
 		this.getContentPane().add(control, BorderLayout.SOUTH);
