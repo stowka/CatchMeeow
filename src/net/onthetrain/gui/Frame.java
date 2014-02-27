@@ -21,7 +21,7 @@ public class Frame extends JFrame implements Runnable, ActionListener, WindowLis
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final int WIDTH = 800;
+	private static final int WIDTH = 900;
 	private static final int HEIGHT = 200;
 
 	private Panel panel = null;
@@ -88,7 +88,9 @@ public class Frame extends JFrame implements Runnable, ActionListener, WindowLis
 			Game.getInstance().setTime(System.currentTimeMillis());
 			Game.getInstance().getCat().resetJumps();
 			Game.getInstance().resetScore();
-			Game.getInstance().setPauseCount(0);
+			Game.getInstance().resetPauseCount();
+			Game.getInstance().resetBonusCount();
+			Game.getInstance().resetCaughtBonusCount();
 			while (Game.getInstance().getCat().isFlying())
 				panel.repaint();
 		}

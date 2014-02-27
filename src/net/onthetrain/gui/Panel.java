@@ -19,6 +19,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import net.onthetrain.game.Bonus;
 import net.onthetrain.game.Cat;
 import net.onthetrain.game.Game;
 import net.onthetrain.game.Obstacle;
@@ -28,22 +29,26 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Font font = null;
-	private Image cat = null, prey = null;
+	private Font font, title = null;
+	private Image cat = null, /*cat2 = null, */prey = null, bonus = null;
 
 	public Panel() {
 		try {
 			this.cat = ImageIO.read(new File("assets/img/miaouss.png"));
+//			this.cat2 = ImageIO.read(new File("assets/img/miaouss2.png"));
 			this.prey = ImageIO.read(new File("assets/img/magicarpe.png"));
+			this.bonus = ImageIO.read(new File("assets/img/pokeball.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
 			this.font = Font.createFont(Font.TRUETYPE_FONT,
-					new FileInputStream(
-							"assets/fonts/SourceSansPro-Regular.ttf"));
+					new FileInputStream("assets/fonts/AngryBirds-Regular.ttf"));
+			this.title = Font.createFont(Font.TRUETYPE_FONT,
+					new FileInputStream("assets/fonts/Pokemon-Solid.ttf"));
 			this.font = this.font.deriveFont(18F);
+			this.title = this.font.deriveFont(18F);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (FontFormatException e) {
@@ -79,6 +84,8 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		String str = Game.getInstance().getScore() > 1 ? " seconds" : " second";
 		g2d.drawString(Game.getInstance().getScore() + str, 20,
 				getHeight() - 20);
+
+		// Pause
 		if (Game.getInstance().isPaused()) {
 			g2d.drawString("[PAUSE]", 20, 20);
 		}
@@ -86,16 +93,27 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		// Jumps
 		if (Cat.getJumps() >= 1) {
 			str = Cat.getJumps() > 1 ? " jumps" : " jump";
-			g2d.drawString(Cat.getJumps() + str, (getWidth() / 2) - 50,
+			g2d.drawString(Cat.getJumps() + str, 170, getHeight() - 20);
+		}
+
+		// Bonus
+		if (Game.getInstance().getCaughtBonusCount() >= 1) {
+			str = Game.getInstance().getCaughtBonusCount() > 1 ? " bonus'"
+					: " bonus";
+			g2d.drawString(Game.getInstance().getCaughtBonusCount() + str, 320,
 					getHeight() - 20);
 		}
 
 		// Pauses
 		if (Game.getInstance().getPauseCount() >= 1) {
 			str = Game.getInstance().getPauseCount() > 1 ? " pauses" : " pause";
-			g2d.drawString(Game.getInstance().getPauseCount() + str, 50 + (getWidth() / 2)
-					+ (getWidth() / 4), getHeight() - 20);
+			g2d.drawString(Game.getInstance().getPauseCount() + str, 470,
+					getHeight() - 20);
 		}
+
+		// Title
+		g2d.setFont(title);
+		g2d.drawString("Catch Meeow", getWidth() - 150, getHeight() - 20);
 
 		// Character
 		g2d.drawImage(cat, 80, getHeight()
@@ -106,13 +124,20 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 				70, 40, 40, this);
 
 		// Obstacles
-
 		g2d.setColor(new Color(210, 63, 43));
 		for (Obstacle o : Game.getInstance().getObstacles()) {
-			g2d.fillRect(o.getPosition() - o.getWidth(),
+			g2d.fillOval(o.getPosition() - o.getWidth(),
 					getHeight() - (o.getHeight() + 50), o.getWidth(),
 					o.getHeight());
 		}
+
+		// Bonus
+		if (Game.getInstance().getBonus() != null) {
+			Game.getInstance().getBonus();
+			g2d.drawImage(bonus, Game.getInstance().getBonus().getPosition(),
+					Bonus.getHeight(), 20, 20, this);
+		}
+
 	}
 
 	@Override
@@ -129,7 +154,8 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		Game.getInstance().getCat().jump();
+		if (!Game.getInstance().isPaused())
+			Game.getInstance().getCat().jump();
 	}
 
 	@Override

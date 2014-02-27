@@ -12,23 +12,24 @@ import net.onthetrain.gui.Frame;
 public class Game implements Runnable {
 	private int height, width;
 	private List<Obstacle> obstacles;
+	private Bonus bonus;
 	private Cat cat;
 	private Dialog settings;
-	
+
 	private String name, level;
-	
+
 	private long time;
-	private int score, n, pauseCount;
+	private int score, n, pauseCount, bonusCount, caughtBonusCount;
 
-	private boolean increasement;
+	private boolean increasement, activeBonus;
 
-	private static final int WIDTH = 800;
+	private static final int WIDTH = 900;
 	private static final int HEIGHT = 200;
 
 	private long speed;
-	
+
 	private boolean paused;
-	
+
 	private static Game instance = null;
 
 	private Game() {
@@ -40,7 +41,7 @@ public class Game implements Runnable {
 		this.speed = 3;
 		this.pauseCount = 0;
 	}
-	
+
 	public void showSettings() {
 		if (settings == null)
 			settings = new Dialog(null, "Catch Meeow", true);
@@ -56,7 +57,6 @@ public class Game implements Runnable {
 		this.level = level;
 	}
 
-	
 	public static Game getInstance() {
 		if (Game.instance == null)
 			instance = new Game();
@@ -135,7 +135,17 @@ public class Game implements Runnable {
 		}
 	}
 
+	public void updateBonusPosition() {
+		if (bonus != null) {
+			bonus.updatePosition();
+			if (bonus.getPosition() <= 0)
+				bonus = null;
+		}
+	}
+
 	private boolean checkObstacle() {
+		if (activeBonus)
+			return true;
 		for (Obstacle o : obstacles) {
 			if (o.getPosition() - o.getWidth() < 120 && o.getPosition() > 85
 					&& o.getHeight() + 90 >= cat.getHeight()) {
@@ -143,6 +153,19 @@ public class Game implements Runnable {
 			}
 		}
 		return true;
+	}
+
+	private boolean checkBonus() {
+		if (bonus != null && !activeBonus) {
+			if (bonus.getPosition() < 120 && bonus.getPosition() > 85
+					&& (((height - Bonus.getHeight()) - 47) <= cat.getHeight())
+					|| ((height - Bonus.getHeight()) - 1) <= cat.getHeight()) {
+				bonus = null;
+				caughtBonusCount += 1;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void lose(long time, String reason) {
@@ -182,32 +205,46 @@ public class Game implements Runnable {
 						score += 1;
 						time = System.currentTimeMillis();
 					}
-					
+
 					if (increasement
 							&& ++n % ((int) (Math.random() * 50 + 80)) == 0) {
-						Obstacle o = new ObstacleDown(height, width);
+						Obstacle o = new ObstacleDown(width - 80 - (n / 3));
 						addObstacle(o);
 						increasement = false;
 					}
-	
+
+					if (!activeBonus && bonus == null
+							&& ((int) (Math.random() * 10000) + 1) == 1) { // 10000
+						bonus = new Bonus(width);
+						bonusCount += 1;
+					}
+
 					if (!increasement)
 						n -= 1;
-	
+
 					if (0 == n)
 						increasement = true;
-	
+
+					if (activeBonus) {
+						obstacles.removeAll(obstacles);
+						activeBonus = false;
+					}
+
 					updateObstaclePositions();
-	
+					updateBonusPosition();
+
 					if (!checkObstacle())
 						lose(time, "obstacle");
-	
+
+					activeBonus = checkBonus();
+
 					if (n % 2 == 0 || n % 3 == 0)
 						cat.fall();
-	
+
 					if (cat.getHeight() >= height - 20) {
 						lose(time, "sky");
 					}
-	
+
 					try {
 						Thread.sleep(speed);
 					} catch (InterruptedException e) {
@@ -217,6 +254,10 @@ public class Game implements Runnable {
 			}
 		}
 
+	}
+
+	public Bonus getBonus() {
+		return bonus;
 	}
 
 	public Cat getCat() {
@@ -244,7 +285,7 @@ public class Game implements Runnable {
 	public boolean isPaused() {
 		return paused;
 	}
-	
+
 	public void setPaused(boolean paused) {
 		this.paused = paused;
 		if (!paused) {
@@ -258,11 +299,27 @@ public class Game implements Runnable {
 		return pauseCount;
 	}
 
-	public void setPauseCount(int pauseCount) {
-		this.pauseCount = pauseCount;
+	public void resetPauseCount() {
+		pauseCount = 0;
 	}
 
 	public void resetScore() {
-		score = 0;		
+		score = 0;
+	}
+
+	public int getBonusCount() {
+		return bonusCount;
+	}
+
+	public void resetBonusCount() {
+		bonusCount = 0;
+	}
+
+	public int getCaughtBonusCount() {
+		return caughtBonusCount;
+	}
+
+	public void resetCaughtBonusCount() {
+		caughtBonusCount = 0;
 	}
 }

@@ -2,11 +2,11 @@ package net.onthetrain.game;
 
 public class Obstacle {
 	protected int height;
-	protected final int width = 20;
+	protected final int width = 14;
 	protected int position;
 	
-	public Obstacle(int height, int position) {
-		this.height = 12;
+	public Obstacle(int position) {
+		this.height = 14;
 		this.position = position;
 	}
 	
