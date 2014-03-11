@@ -39,7 +39,8 @@ public class Dialog extends JDialog {
 
 	private void initComponent() {
 		// Icon
-		icon = new JLabel(new ImageIcon("assets/img/settings.png"));
+		icon = new JLabel(new ImageIcon("resources/img/settings.png"));
+		System.out.println(getClass().getResource("resources/img/settings.png"));
 		JPanel panIcon = new JPanel();
 		panIcon.setBackground(Color.WHITE);
 		panIcon.setPreferredSize(new Dimension(110, 100));

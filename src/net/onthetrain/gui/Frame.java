@@ -91,6 +91,7 @@ public class Frame extends JFrame implements Runnable, ActionListener, WindowLis
 			Game.getInstance().resetPauseCount();
 			Game.getInstance().resetBonusCount();
 			Game.getInstance().resetCaughtBonusCount();
+			Game.getInstance().resetObstacleCount();
 			while (Game.getInstance().getCat().isFlying())
 				panel.repaint();
 		}

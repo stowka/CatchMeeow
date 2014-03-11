@@ -11,11 +11,11 @@ import java.sql.DriverManager;
 public final class SDBH {
     public static Connection connection;
     private SDBH() {
-    	String url = "jdbc:mysql://ns303921.ovh.net:3306/";
+    	String url = "jdbc:mysql://stowka.co:3306/";
         String database = "catchmee";
         String driver = "com.mysql.jdbc.Driver";
         String username = "root";
-        String password = "abmargot";
+        String password = "893QQY";
         try {
             Class.forName(driver).newInstance();
             SDBH.connection = (Connection)DriverManager.getConnection(url + database, username, password);

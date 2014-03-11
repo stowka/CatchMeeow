@@ -34,19 +34,19 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 
 	public Panel() {
 		try {
-			this.cat = ImageIO.read(new File("assets/img/miaouss.png"));
-//			this.cat2 = ImageIO.read(new File("assets/img/miaouss2.png"));
-			this.prey = ImageIO.read(new File("assets/img/magicarpe.png"));
-			this.bonus = ImageIO.read(new File("assets/img/pokeball.png"));
+			this.cat = ImageIO.read(new File("resources/img/miaouss.png"));
+//			this.cat2 = ImageIO.read(new File("resources/img/miaouss2.png"));
+			this.prey = ImageIO.read(new File("resources/img/magicarpe.png"));
+			this.bonus = ImageIO.read(new File("resources/img/pokeball.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
 			this.font = Font.createFont(Font.TRUETYPE_FONT,
-					new FileInputStream("assets/fonts/AngryBirds-Regular.ttf"));
+					new FileInputStream("resources/fonts/AngryBirds-Regular.ttf"));
 			this.title = Font.createFont(Font.TRUETYPE_FONT,
-					new FileInputStream("assets/fonts/Pokemon-Solid.ttf"));
+					new FileInputStream("resources/fonts/Pokemon-Solid.ttf"));
 			this.font = this.font.deriveFont(18F);
 			this.title = this.font.deriveFont(18F);
 		} catch (FileNotFoundException e) {
@@ -81,7 +81,7 @@ public class Panel extends JPanel implements KeyListener, MouseListener {
 		// Time
 		g2d.setColor(Color.WHITE);
 		g2d.setFont(font);
-		String str = Game.getInstance().getScore() > 1 ? " seconds" : " second";
+		String str = Game.getInstance().getScore() > 1 ? " feet" : " foot";
 		g2d.drawString(Game.getInstance().getScore() + str, 20,
 				getHeight() - 20);
 

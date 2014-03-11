@@ -19,7 +19,7 @@ public class Game implements Runnable {
 	private String name, level;
 
 	private long time;
-	private int score, n, pauseCount, bonusCount, caughtBonusCount;
+	private int score, n, pauseCount, bonusCount, caughtBonusCount, obstacleCount;
 
 	private boolean increasement, activeBonus;
 
@@ -40,8 +40,11 @@ public class Game implements Runnable {
 		this.name = "";
 		this.speed = 3;
 		this.pauseCount = 0;
+		this.bonusCount = 0;
+		this.caughtBonusCount = 0;
+		this.obstacleCount = 0;
 	}
-
+	
 	public void showSettings() {
 		if (settings == null)
 			settings = new Dialog(null, "Catch Meeow", true);
@@ -130,8 +133,10 @@ public class Game implements Runnable {
 	public void updateObstaclePositions() {
 		for (int i = 0; i < obstacles.size(); i += 1) {
 			obstacles.get(i).updatePosition();
-			if (obstacles.get(i).getPosition() <= 0)
+			if (obstacles.get(i).getPosition() <= 0) {
 				obstacles.remove(i);
+				obstacleCount += 1;
+			}
 		}
 	}
 
@@ -322,4 +327,13 @@ public class Game implements Runnable {
 	public void resetCaughtBonusCount() {
 		caughtBonusCount = 0;
 	}
+	
+	public int getObstacleCount() {
+		return obstacleCount;
+	}
+
+	public void resetObstacleCount() {
+		obstacleCount = 0;
+	}
+
 }
